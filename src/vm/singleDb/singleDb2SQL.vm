@@ -1,0 +1,4 @@
+INSERT INTO `xt_gnxx` (`gnbh`, `sjgnbh`, `gnmc`, `gnms`, `ysid`, `gnljdz`, `ljdzfjcs`, `gnljfsdm`, `gnlxdm`, `gnytdm`, `gntblmc`, `gntbljdz`, `gnbbh`, `mksxh`, `gnsxh`, `czsxh`, `ycbz`, `gnztdm`, `ztbgsj`, `cjrbh`, `cjsj`, `czrbh`, `czsj`) 
+VALUES ('${gnbh}', '${sjgnbh}', '${gnmc}', '${gnmc}', '#', '${modelname}/${modelname}Manager', '#', '0', '1', NULL, 'icon-function', 'css/customicons/function.png', '0', ${mksxh}, ${gnsxh}, 0, '0', '0', 20160724101010, '1', 20160724101010, '1', 20160724101010);
+
+INSERT INTO `xt_jsgngx` (`jsbh`, `gnbh`,  `cjrbh`, `cjsj`, `czrbh`, `czsj`) VALUES ('1', '${gnbh}', '0', 0, '0', 0);

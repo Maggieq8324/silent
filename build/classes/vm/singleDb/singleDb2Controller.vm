@@ -1,0 +1,89 @@
+package pms.controller;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import com.platform.dataaccess.support.PaginationCondition;
+import com.platform.dataaccess.support.PaginationResult;
+
+import pms.entity.${tablemodel.getTableclass()};
+import pms.model.LoginInfo;
+import pms.service.${upcasemodelname}Service;
+
+/**
+ * @author velocity
+ * ${tablemodel.getTablename()}管理控制器
+ *
+ */
+
+@Controller
+@RequestMapping("/${modelname}")
+public class ${upcasemodelname}Controller {
+	
+	@Autowired
+	private ${upcasemodelname}Service ${modelname}Service;
+
+	@RequestMapping(value = "/queryPagination${tablemodel.getTableclass()}", method = RequestMethod.POST)
+	@ResponseBody
+	public PaginationResult<${tablemodel.getTableclass()}> queryPagination${tablemodel.getTableclass()}(HttpServletRequest request, ${tablemodel.getTableclass()} entity,
+			PaginationCondition p) throws Exception {
+		LoginInfo loginInfo = (LoginInfo) request.getSession().getAttribute("loginInfo");
+			
+		return ${modelname}Service.query${tablemodel.getTableclass()}(entity, p, loginInfo);
+	}
+	
+	@RequestMapping(value = "/query${tablemodel.getTableclass()}", method = RequestMethod.POST)
+	@ResponseBody
+	public List<Map<String, Object>> query${tablemodel.getTableclass()}(HttpServletRequest request, ${tablemodel.getTableclass()} entity) throws Exception {
+		LoginInfo loginInfo = (LoginInfo) request.getSession().getAttribute("loginInfo");
+			
+		return ${modelname}Service.query${tablemodel.getTableclass()}(entity, loginInfo);
+	}
+
+	@RequestMapping(value = "/add${tablemodel.getTableclass()}", method = RequestMethod.POST)
+	@ResponseBody
+	@Transactional(rollbackFor = Throwable.class, readOnly = false)
+	public Map<String, Object> add${tablemodel.getTableclass()}(HttpServletRequest request, ${tablemodel.getTableclass()} entity) throws Exception {
+		Map<String, Object> result = new HashMap<String, Object>();
+		
+		LoginInfo loginInfo = (LoginInfo) request.getSession().getAttribute("loginInfo");
+		
+		${modelname}Service.add${tablemodel.getTableclass()}(entity, loginInfo);
+		result.put("message", "增加${tablemodel.getTablename()}成功！");
+		return result;
+	}
+	
+	@RequestMapping(value = "/update${tablemodel.getTableclass()}", method = RequestMethod.POST)
+	@ResponseBody
+	@Transactional(rollbackFor = Throwable.class, readOnly = false)
+	public Map<String, Object> update${tablemodel.getTableclass()}(HttpServletRequest request, ${tablemodel.getTableclass()} entity) throws Exception {
+		Map<String, Object> result = new HashMap<String, Object>();
+		
+		LoginInfo loginInfo = (LoginInfo) request.getSession().getAttribute("loginInfo");
+		
+		${modelname}Service.update${tablemodel.getTableclass()}(entity, loginInfo);
+		result.put("message", "修改${tablemodel.getTablename()}成功！");
+		return result;
+	}
+	
+	@RequestMapping(value = "/delete${tablemodel.getTableclass()}", method = RequestMethod.POST)
+	@ResponseBody
+	@Transactional(rollbackFor = Throwable.class, readOnly = false)
+	public Map<String, Object> delete${tablemodel.getTableclass()}(HttpServletRequest request, ${tablemodel.getTableclass()} entity) throws Exception {
+		Map<String, Object> result = new HashMap<String, Object>();
+		
+		${modelname}Service.delete${tablemodel.getTableclass()}(entity);
+		result.put("message", "删除${tablemodel.getTablename()}成功！");
+		return result;
+	}
+}

@@ -1,0 +1,220 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+	pageEncoding="UTF-8"%>
+<%@ include file="/include.jsp"%>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Insert title here</title>
+</head>
+<body>
+	<div class="easyui-panel" fit="true" border="false">
+		<form id="${tablemodel.getTableclass()}AddForm" style="margin: 10px; text-align: center; ">
+#foreach ($strPk in $tablemodel.getListPK())
+			<input type="hidden" name="${strPk}" value="0"/>
+#end
+
+	        <input type="hidden" name="cjrbh" value="0"/>
+	        <input type="hidden" name="cjsj" value="0"/>
+	        <input type="hidden" name="czrbh" value="0"/>
+	        <input type="hidden" name="czsj" value="0"/>
+	        
+			<table width="100%">
+#set ($i=0)
+#foreach ($col in $tablemodel.getTableColList())
+#if (!$col.isIspk())
+#if ($i%2 == 0)
+				<tr>
+#end
+					<td align="right">${col.getColname()}：</td>
+					<td align="left">
+#if($col.getColcode().equals("zzbm") || $col.getColcode().equals("gddwbm"))
+								<input class="easyui-combobox" name="${col.getColcode()}" value="${loginInfo.zzbm}" style="width: 200px;" data-options="editable:false,panelHeight:'auto',valueField:'zzbm',textField:'zzmc',url:'xtgl/queryZzBySelfZzbm'"  required="true"/>
+#else
+#if($col.getColcode().equals("sccjbh"))
+								<input class="easyui-combobox" name="sccjbh" style="width: 200px;" data-options="editable:false,	panelHeight:'auto',	valueField:'sccjbh', textField:'sccjmc', url:'sccjgl/querySbSccjxx'"  required="true"/>
+#else
+#if ($col.isIsbz())	
+						<select class="easyui-combobox" name="${col.getColcode()}" style="width:200px;" data-options="editable:false,panelHeight:'auto'" required="true">   
+				    		   
+							<option value="1">是</option>
+							<option value="0">否</option>
+						</select> 
+#else 			
+#if ($col.isIsdm())
+						<input class="easyui-combobox" name="${col.getColcode()}" style="width: 200px;" data-options="editable:false,	panelHeight:'auto',	valueField:'dmbm', textField:'dmmc', url:'xtgl/queryDmByDmflbm?dmflbm=${col.getUpperCaseDMname()}'"  required="true"/>
+#else 
+#if($col.isString())
+								<input class="easyui-textbox" name="${col.getColcode()}" style="width: 200px;" validType="length[0,${col.getHalfCollength()}]"  required="true"/>
+#end
+
+#if($col.isInteger() || $col.isLong())
+						<input class="easyui-numberbox"	name="${col.getColcode()}" style="width: 200px;" validType="length[0,${col.getCollength()}]" data-options="precision:0"  required="true"/>
+#end
+#if($col.isBigdecimal())
+						<input class="easyui-numberbox" name="${col.getColcode()}" style="width: 200px;" validType="length[0,${col.getCollength()}]" data-options="precision:${col.getColposition()}" required="true"/>
+#end
+#if($col.isDateTime()  || $col.isDate() || $col.isYearMouth())
+						<input id="${tablemodel.getTableclass()}AddForm_${col.getColcode()}" name="${col.getColcode()}" style="width: 200px;" editable="false" required="true"/>
+#end						
+#end
+#end	
+#end
+#end
+					</td>
+#if ($i%2 == 1)
+				</tr>
+#end
+#set ($i=$i+1)
+
+#end
+
+#end
+
+#if ($i%2 == 1)
+				</tr>
+#end
+				<tr>
+					<td colspan="4" align="center">
+					    <a href="#" class="easyui-linkbutton"
+						iconCls="icon-clear" onclick="clear${tablemodel.getTableclass()}AddForm();">清空</a>
+						&ensp;&ensp;
+					    <a href="#"  id ="${tablemodel.getTableclass()}AddForm_add${tablemodel.getTableclass()}Linkbutton" class="easyui-linkbutton"
+						iconCls="icon-search" onclick="add${tablemodel.getTableclass()}();">提交</a>
+					</td>
+				</tr>
+			</table>
+		</form>
+	</div>
+	<script type="text/javascript">
+#if ($tablemodel.getListDatetime().size() > 0)
+	function initDateTimeBox(boxid, req){
+	    $('#'+boxid).datetimebox({    
+	        required:req
+	    });
+	}
+#foreach ($col in $tablemodel.getListDatetime())
+	initDateTimeBox('${tablemodel.getTableclass()}AddForm_${col.getColcode()}',true);
+#end
+#end
+
+#if ($tablemodel.getListDate().size() > 0)
+	function initDateBox(boxid, req){
+	    $('#'+boxid).datebox({    
+	        required:req,
+	        parser:function(s){
+	        	s = ""+s;
+	    		if (!s) return new Date();
+	    		var y = s.substring(0,4);
+	    		var m = s.substring(4,6);
+	    		var d = s.substring(6,8);
+				
+	    		//alert("parse"+":"+y+"--"+m+"--"+d);
+	    		
+	    		if (!isNaN(y) && !isNaN(m) && !isNaN(d)){
+	    			return new Date(y,m-1,d);
+	    		} else {
+	    			return new Date();
+	    		}
+	        },
+	        formatter:function(date){
+	        	
+	        	var y = date.getFullYear();
+	        	var m = date.getMonth()+1;
+	        	var d = date.getDate();
+	        	
+	        	m=""+m;
+	        	d=""+d;
+	        	y=""+y;
+	        	
+	        	if(m.length == 1) {
+	        		m="0"+m;
+	        	}
+	        	
+	        	if(d.length == 1) {
+	        		d="0"+d;
+	        	}
+	        	//alert("formatter"+":"+y+"--"+m+"--"+d);
+	        	var strdate=y+""+m+""+d;
+	        	
+	        	return strdate;
+	        }
+	    });
+	}
+#foreach ($col in $tablemodel.getListDate())
+	initDateBox('${tablemodel.getTableclass()}AddForm_${col.getColcode()}',true);
+#end
+#end
+
+
+#if ($tablemodel.getListYearmouth().size() > 0)
+	function initMouthBox(boxid, req){
+	    $('#'+boxid).datebox({    
+	        required:req,
+	        parser:function(s){
+	        	s = ""+s;
+	    		if (!s) return new Date();
+	    		var y = s.substring(0,4);
+	    		var m = s.substring(4,6);
+	    		var d = "01";
+				
+	    		//alert("parse"+":"+y+"--"+m+"--"+d);
+	    		//var strdate=y+"-"+m+"-"+d+" "+h+":"+mi+":"+se;
+	    		//alert("parse1:"+strdate);
+	    		
+	    		var datetime = new Date(Number(y),Number(m)-1,Number(d));
+
+	    		//alert("parse2:"+datetime);
+	    		return datetime;
+	        },
+	        formatter:function(date){
+	        	
+	        	var y = date.getFullYear();
+	        	var m = date.getMonth()+1;
+
+	        	
+	        	m=""+m;
+	        	y=""+y;
+
+	        	
+	        	if(m.length == 1) {
+	        		m="0"+m;
+	        	}
+
+	        	var strdate=y+""+m;
+	        	//alert("formatter:"+strdate);
+	        	return strdate;
+	        }
+	    });
+	}
+#foreach ($col in $tablemodel.getListYearmouth())
+	initMouthBox('${tablemodel.getTableclass()}AddForm_${col.getColcode()}',true);
+#end
+#end
+
+	function add${tablemodel.getTableclass()}() {
+		var result = $('#${tablemodel.getTableclass()}AddForm').form('validate');
+		if (!result) {
+			return false;
+		}
+
+		$('#${tablemodel.getTableclass()}AddForm_add${tablemodel.getTableclass()}Linkbutton').linkbutton('disable');
+		jQuery.post("${modelname}/add${tablemodel.getTableclass()}", $('#${tablemodel.getTableclass()}AddForm').serializeArray(),
+				function(data) {
+			        $('#${tablemodel.getTableclass()}AddForm_add${tablemodel.getTableclass()}Linkbutton').linkbutton('enable');
+					if(data.message){
+			        	jQuery.messager.alert('提示', data.message, 'info');
+			        	closePopWindow();
+			        }
+				}
+		);
+	}
+	
+	function clear${tablemodel.getTableclass()}AddForm(){
+		$('#${tablemodel.getTableclass()}AddForm').form('clear');
+	}
+	</script>
+</body>
+</html>

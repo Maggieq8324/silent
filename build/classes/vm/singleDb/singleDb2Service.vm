@@ -1,0 +1,68 @@
+package pms.service;
+
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.platform.dataaccess.JdbcManager;
+import com.platform.dataaccess.support.PaginationCondition;
+import com.platform.dataaccess.support.PaginationResult;
+
+import com.platform.dataaccess.support.SQLAndArgs;
+import com.platform.dataaccess.support.SQLAndArgsGenerator;
+
+import pms.entity.${tablemodel.getTableclass()};
+import pms.model.LoginInfo;
+import pms.support.BusinessException;
+
+/**
+ * @author velocity
+ * ${tablemodel.getTablename()}管理服务
+ *
+ */
+
+@Service("${modelname}Service")
+public class ${upcasemodelname}Service {
+	
+	@Autowired
+	private JdbcManager jdbcManager;
+	
+	public PaginationResult<${tablemodel.getTableclass()}> query${tablemodel.getTableclass()}(${tablemodel.getTableclass()} entity,PaginationCondition p, LoginInfo loginInfo) throws BusinessException {
+		//SQLAndArgs sqlAndArgs = SQLAndArgsGenerator.getEntitiesLikeSelectConditionSqlAndArgs(entity);
+		//return jdbcManager
+		//		.parameterizedQuery(" select * from (select * from ${tablemodel.getTablecode()} where zzbm like ?) c " + sqlAndArgs.getSql(), p).setParameter(loginInfo.getZzbm()+'%')
+		//		.setParameter(sqlAndArgs.getArgs().toArray()).getPaginationEntities(${tablemodel.getTableclass()}.class);
+				
+		return (PaginationResult<${tablemodel.getTableclass()}>) jdbcManager.entitiesQuery(entity, ${tablemodel.getTableclass()}.class, p);		
+	}
+	
+	public List<Map<String, Object>> query${tablemodel.getTableclass()}(${tablemodel.getTableclass()} entity, LoginInfo loginInfo) throws BusinessException {
+		SQLAndArgs sqlAndArgs = SQLAndArgsGenerator.getEntitiesLikeSelectConditionSqlAndArgs(entity);
+		return jdbcManager
+				.parameterizedQuery(" select * from (select * from ${tablemodel.getTablecode()} where zzbm like ?) c " + sqlAndArgs.getSql()).setParameter(loginInfo.getZzbm()+'%')
+				.setParameter(sqlAndArgs.getArgs().toArray()).getMapList();	
+	}
+	
+	@Transactional(rollbackFor = Throwable.class, readOnly = false)
+	public void add${tablemodel.getTableclass()}(${tablemodel.getTableclass()} entity, LoginInfo loginInfo) throws BusinessException {
+		String pk = jdbcManager.getNextStringValue("${tablemodel.getTablecode()}", "${pk}");
+		
+		entity.set${upcasepk}(pk);
+		
+		jdbcManager.entityInsert(entity);
+	}
+	
+	@Transactional(rollbackFor = Throwable.class, readOnly = false)
+	public void update${tablemodel.getTableclass()}(${tablemodel.getTableclass()} entity, LoginInfo loginInfo) throws BusinessException {
+		jdbcManager.entityUpdate(entity);
+	}
+	
+	@Transactional(rollbackFor = Throwable.class, readOnly = false)
+	public void delete${tablemodel.getTableclass()}(${tablemodel.getTableclass()} entity) throws BusinessException {
+		jdbcManager.entityDelete(entity);
+	}
+	
+}
